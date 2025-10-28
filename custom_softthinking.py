@@ -191,6 +191,7 @@ def main():
                 prompt = tokenizer.apply_chat_template(sample["prompt"], add_generation_prompt=True, tokenize=False)
                 for _ in range(num_samples):
                     prompt_list.append(prompt)
+                    print(f"sample['prompt']: {sample['prompt']}")
                     print(f"prompt: {prompt}")
                     x = 1/0
                     idx_list.append(len(prompt_list)-1)
