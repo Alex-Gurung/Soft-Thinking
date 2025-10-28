@@ -120,7 +120,8 @@ def main():
     print(f"Arguments: {args}", flush=True)
 
 
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    # tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained("Qwen/Qwen2.5-7B-Instruct")
     sampling_params = {"temperature": temperature, "top_p": top_p, "top_k": top_k, "min_p": min_p, "repetition_penalty": args.repetition_penalty,
                         "after_thinking_temperature": args.after_thinking_temperature, "after_thinking_top_p": args.after_thinking_top_p, "after_thinking_top_k": args.after_thinking_top_k, "after_thinking_min_p": args.after_thinking_min_p,
                         "n": 1, # repeat prompt for num_samples times instead of using num_samples in sampling_params
