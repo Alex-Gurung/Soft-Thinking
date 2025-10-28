@@ -234,6 +234,8 @@ def main():
             sampling_backend=args.sampling_backend
         )
         outputs =  llm.generate(prompt_list[idx:idx+max_batch], sampling_params)
+        print((prompt_list[idx:idx+max_batch]))
+        print([o['text'] for o in outputs])
         decoded_text_list.extend([o["text"] for o in outputs])
         finish_generation_list.extend([o["meta_info"]["finish_reason"]["type"] == "stop" and not args.enable_soft_thinking for o in outputs])
 
