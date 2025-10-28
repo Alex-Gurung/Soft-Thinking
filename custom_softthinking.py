@@ -189,10 +189,11 @@ def main():
         with jsonlines.open(f"/mnt/disk/latent_tasks/grpo_flawed_fictions/data/{split}.jsonl") as reader:
             for sample in reader:
                 print(f"sample: {sample}")
-                prompt = tokenizer.apply_chat_template(sample["prompt"], add_generation_prompt=True, tokenize=False)
+                # prompt = tokenizer.apply_chat_template(sample["prompt"], add_generation_prompt=True, tokenize=False)
+                prompt = tokenizer.apply_chat_template([{"role": "user", "content": sample["prompt"]}], add_generation_prompt=True, tokenize=False)
                 for _ in range(num_samples):
                     prompt_list.append(prompt)
-                    print(f"sample['prompt']: {sample['prompt']}")
+                    # print(f"sample['prompt']: {sample['prompt']}")
                     print(f"prompt: {prompt}")
                     x = 1/0
                     idx_list.append(len(prompt_list)-1)
