@@ -1,6 +1,7 @@
 results*.json
 results/*
 output*.txt
+*.pkl
 data
 
 *.egg-info

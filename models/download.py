@@ -3,7 +3,7 @@ from huggingface_hub import snapshot_download
 import argparse
 
 parser = argparse.ArgumentParser(description='Download model from Hugging Face Hub')
-parser.add_argument('--model_name', type=str, default='Qwen/QwQ-32B', help='Name of the model to download')
+parser.add_argument('--model_name', type=str, default='Qwen/Qwen2.5-7B-Instruct', help='Name of the model to download')
 args = parser.parse_args()
 
 local_dir = "./models/"+args.model_name

@@ -89,7 +89,8 @@ def main():
     end_idx = args.end_idx
     reeval = args.reeval
     dataset = "ncp"
-    split = "val"
+    # split = "val"
+    split = "test"
 
     nice_name = f"{split}_{temperature}temp_{top_p}topp_{top_k}topk_{min_p}minp_{args.repetition_penalty}reppen_{args.dirichlet_alpha}diralpha_{args.max_topk}maxk_{max_generated_tokens}maxtok_{args.early_stopping_entropy_threshold}enths_{args.early_stopping_length_threshold}lenhs_{args.add_noise_gumbel_softmax}gumbel_{args.add_noise_dirichlet}dirichlet_{args.enable_soft_thinking}softthk_{args.num_samples}nsmpl"
 
@@ -160,12 +161,21 @@ def main():
     #         idx_list.append(idx)
     prompt_list = []
     idx_list = []
-    with jsonlines.open(f"/home/co-guru1/latent/ncp_latent/ncp_latent/rl_data/{split}.jsonl") as reader:
+    with jsonlines.open(f"/mnt/disk/ncp_latent/rl_data/{split}.jsonl") as reader:
         for sample in reader:
             prompt = tokenizer.apply_chat_template(sample["prompt"], add_generation_prompt=True, tokenize=False)
             for _ in range(num_samples):
                 prompt_list.append(prompt)
                 idx_list.append(len(prompt_list)-1)
+                # print(f"prompt: {prompt}")
+                # break
+
+    # print(f"len(prompt_list): {len(prompt_list)}")
+    # print(f"len(idx_list): {len(idx_list)}")
+    # # first element:
+    # print(f"first element of prompt_list: {prompt_list[0]}")
+    # print(f"first element of idx_list: {idx_list[0]}")
+    # exit()
 
     # filter to first 10
     # prompt_list = prompt_list[:4]
@@ -208,6 +218,9 @@ def main():
             cur_text = o["text"]
             cur_prompt = prompt_list[idx+i]
             decoded_text_to_prompt[cur_text] = cur_prompt
+            # print(f"cur_text: {cur_text}")
+            # print(f"cur_prompt: {cur_prompt}")
+            # exit()
 
         idx += max_batch
         outputs = None
