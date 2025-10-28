@@ -256,6 +256,7 @@ def main():
     # evaluate the results
     correct = 0
     for i, decoded_text in enumerate(decoded_text_list):
+        print(f"Decoded text: {decoded_text}", flush=True)
         answer = answer_list[i]
         predicted = parse_prediction(decoded_text)
         print(f"Predicted: {predicted}, Answer: {answer}", flush=True)
