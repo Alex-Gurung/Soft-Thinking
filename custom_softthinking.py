@@ -18,6 +18,28 @@ import time
 import jsonlines
 import pickle
 
+import re
+BOXED_RE = re.compile(r"\\boxed\{([^}]*)\}", re.IGNORECASE)
+
+
+def extract_last_boxed(text: str) -> str:
+    matches = list(BOXED_RE.finditer(text or ""))
+    if matches:
+        return matches[-1].group(1).strip()
+    return text or ""
+
+
+def parse_prediction(raw_text: str) -> float:
+    """
+    Legacy helper used in earlier experiments to map yes/no to a float.
+    Kept for compatibility. For boxed numeric accuracy use extract_last_boxed + verify_answer.
+    """
+    candidate = extract_last_boxed(raw_text)
+    candidate = (candidate or raw_text or "").strip().lower()
+    if "yes" in candidate and "no" not in candidate:
+        return 1.0
+    return 0.0
+
 def main():
     # parse arguments
     parser = argparse.ArgumentParser(description='Process some parameters for text generation.')
@@ -88,7 +110,8 @@ def main():
     start_idx = args.start_idx
     end_idx = args.end_idx
     reeval = args.reeval
-    dataset = "ncp"
+    # dataset = "ncp"
+    dataset = "flawedfictions"
     split = "val"
 
     nice_name = f"{split}_{temperature}temp_{top_p}topp_{top_k}topk_{min_p}minp_{args.repetition_penalty}reppen_{args.dirichlet_alpha}diralpha_{args.max_topk}maxk_{max_generated_tokens}maxtok_{args.early_stopping_entropy_threshold}enths_{args.early_stopping_length_threshold}lenhs_{args.add_noise_gumbel_softmax}gumbel_{args.add_noise_dirichlet}dirichlet_{args.enable_soft_thinking}softthk_{args.num_samples}nsmpl"
@@ -160,12 +183,24 @@ def main():
     #         idx_list.append(idx)
     prompt_list = []
     idx_list = []
-    with jsonlines.open(f"/home/co-guru1/latent/ncp_latent/ncp_latent/rl_data/{split}.jsonl") as reader:
-        for sample in reader:
-            prompt = tokenizer.apply_chat_template(sample["prompt"], add_generation_prompt=True, tokenize=False)
-            for _ in range(num_samples):
-                prompt_list.append(prompt)
-                idx_list.append(len(prompt_list)-1)
+    answer_list = []
+    if dataset == "flawedfictions":
+        with jsonlines.open(f"/mnt/disk/latent_tasks/grpo_flawed_fictions/data/{split}.jsonl") as reader:
+            for sample in reader:
+                prompt = tokenizer.apply_chat_template(sample["prompt"], add_generation_prompt=True, tokenize=False)
+                for _ in range(num_samples):
+                    prompt_list.append(prompt)
+                    idx_list.append(len(prompt_list)-1)
+                    answer_list.append(sample["answer"])
+    elif dataset == "ncp":
+        with jsonlines.open(f"/home/co-guru1/latent/ncp_latent/ncp_latent/rl_data/{split}.jsonl") as reader:
+            for sample in reader:
+                prompt = tokenizer.apply_chat_template(sample["prompt"], add_generation_prompt=True, tokenize=False)
+                for _ in range(num_samples):
+                    prompt_list.append(prompt)
+                    idx_list.append(len(prompt_list)-1)
+    else:
+        raise ValueError(f"Dataset {dataset} not supported")
 
     # filter to first 10
     # prompt_list = prompt_list[:4]
@@ -215,6 +250,15 @@ def main():
 
         torch.cuda.empty_cache()
 
+    # evaluate the results
+    correct = 0
+    for i, decoded_text in enumerate(decoded_text_list):
+        answer = answer_list[i]
+        predicted = parse_prediction(decoded_text)
+        print(f"Predicted: {predicted}, Answer: {answer}", flush=True)
+        if predicted == answer:
+            correct += 1
+    print(f"Accuracy: {correct/len(decoded_text_list)}", flush=True)
     # save the resultss
     # with open(f"decoded_text_to_prompt_gumbel_softmax_5n.pkl", "wb") as f:
     # with open(f"decoded_text_to_prompt_gumbel_softmax_5n.pkl", "wb") as f:
