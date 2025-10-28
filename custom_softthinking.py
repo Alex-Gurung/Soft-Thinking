@@ -259,7 +259,7 @@ def main():
         answer = answer_list[i]
         predicted = parse_prediction(decoded_text)
         print(f"Predicted: {predicted}, Answer: {answer}", flush=True)
-        if predicted == answer:
+        if int(predicted) == int(answer):
             correct += 1
     print(f"Accuracy: {correct/len(decoded_text_list)}", flush=True)
     # save the resultss
