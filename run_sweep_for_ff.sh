@@ -17,6 +17,11 @@ NO_REDIRECT=${NO_REDIRECT:-0}       # NO_REDIRECT=1 to stream logs to console
 
 mkdir -p "$OUTROOT"
 
+# Summary artifacts
+summary_file="$OUTROOT/_summary.tsv"
+: > "$summary_file"
+printf "run_name\ttemp\ttopk\ttopp\tnoise\tstatus\taccuracy\n" >"$summary_file"
+
 total=$(( ${#TEMPS[@]} * ${#TOPKS[@]} * ${#TOPPS[@]} * ${#NOISE_BLOCKS[@]} ))
 idx=0
 fail_log="$OUTROOT/_failures.txt"
@@ -72,7 +77,10 @@ for temp in "${TEMPS[@]}"; do
         fi
 
         if [[ "$NO_REDIRECT" -eq 1 ]]; then
-          "${cmd[@]}"
+          # Stream to console and also save logs
+          "${cmd[@]}" \
+            > >(tee "${OUTDIR}/stdout.log") \
+            2> >(tee "${OUTDIR}/stderr.log" >&2)
           status=$?
         else
           # Save full stdout/stderr for the run
@@ -82,8 +90,18 @@ for temp in "${TEMPS[@]}"; do
 
         if [[ $status -ne 0 ]]; then
           echo "✗ FAILED: $RUN_NAME (exit $status)" | tee -a "$fail_log"
+          printf "%s\t%s\t%s\t%s\t%s\tFAILED\t-\n" \
+            "$RUN_NAME" "$temp" "$topk" "$topp" "$noise" >>"$summary_file"
         else
           echo "✓ OK: $RUN_NAME"
+          # Parse accuracy from stdout log (take the last occurrence)
+          if [[ -f "${OUTDIR}/stdout.log" ]]; then
+            acc=$(awk '/^Accuracy:/ {a=$2} END {if (a=="") print "-"; else print a}' "${OUTDIR}/stdout.log")
+          else
+            acc="-"
+          fi
+          printf "%s\t%s\t%s\t%s\t%s\tOK\t%s\n" \
+            "$RUN_NAME" "$temp" "$topk" "$topp" "$noise" "$acc" >>"$summary_file"
         fi
 
       done
@@ -94,3 +112,12 @@ done
 echo "Done. Expected runs: $total"
 [[ -s "$fail_log" ]] && echo "Some runs failed. See $fail_log"
 echo "Outputs in: $OUTROOT"
+
+# Print a nice summary table
+echo
+echo "Sweep Summary (settings -> accuracy):"
+if command -v column >/dev/null 2>&1; then
+  column -t -s $'\t' "$summary_file"
+else
+  cat "$summary_file"
+fi

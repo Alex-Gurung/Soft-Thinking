@@ -114,7 +114,7 @@ def main():
     dataset = "flawedfictions"
     split = "val"
 
-    nice_name = f"{split}_{temperature}temp_{top_p}topp_{top_k}topk_{min_p}minp_{args.repetition_penalty}reppen_{args.dirichlet_alpha}diralpha_{args.max_topk}maxk_{max_generated_tokens}maxtok_{args.early_stopping_entropy_threshold}enths_{args.early_stopping_length_threshold}lenhs_{args.add_noise_gumbel_softmax}gumbel_{args.add_noise_dirichlet}dirichlet_{args.enable_soft_thinking}softthk_{args.num_samples}nsmpl"
+    nice_name = f"{dataset}_{split}_{temperature}temp_{top_p}topp_{top_k}topk_{min_p}minp_{args.repetition_penalty}reppen_{args.dirichlet_alpha}diralpha_{args.max_topk}maxk_{max_generated_tokens}maxtok_{args.early_stopping_entropy_threshold}enths_{args.early_stopping_length_threshold}lenhs_{args.add_noise_gumbel_softmax}gumbel_{args.add_noise_dirichlet}dirichlet_{args.enable_soft_thinking}softthk_{args.num_samples}nsmpl"
 
 
     print(f"Arguments: {args}", flush=True)
