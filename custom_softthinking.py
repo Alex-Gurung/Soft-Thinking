@@ -221,7 +221,7 @@ def main():
     decoded_text_to_prompt = {}
     idx = 0
     while idx < len(prompt_list):
-        print(f"Number of GPUs available: {num_gpus}", flush=True)
+        # print(f"Number of GPUs available: {num_gpus}", flush=True)
         llm = sgl.Engine(
             model_path=model_name,
             tp_size=num_gpus,
@@ -240,8 +240,8 @@ def main():
             sampling_backend=args.sampling_backend
         )
         outputs =  llm.generate(prompt_list[idx:idx+max_batch], sampling_params)
-        print((prompt_list[idx:idx+max_batch]))
-        print([o['text'] for o in outputs])
+        # print((prompt_list[idx:idx+max_batch]))
+        # print([o['text'] for o in outputs])
         decoded_text_list.extend([o["text"] for o in outputs])
         finish_generation_list.extend([o["meta_info"]["finish_reason"]["type"] == "stop" and not args.enable_soft_thinking for o in outputs])
 
@@ -264,10 +264,10 @@ def main():
     # evaluate the results
     correct = 0
     for i, decoded_text in enumerate(decoded_text_list):
-        print(f"Decoded text: {decoded_text}", flush=True)
+        # print(f"Decoded text: {decoded_text}", flush=True)
         answer = answer_list[i]
         predicted = parse_prediction(decoded_text)
-        print(f"Predicted: {predicted}, Answer: {answer}", flush=True)
+        # print(f"Predicted: {predicted}, Answer: {answer}", flush=True)
         if int(predicted) == int(answer):
             correct += 1
     print(f"Accuracy: {correct/len(decoded_text_list)}", flush=True)
