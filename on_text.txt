@@ -1,0 +1,11 @@
+Accuracy per repetition: ['51.61%', '51.61%', '51.61%', '51.61%', '51.61%']
+Mean accuracy across reps: 51.61%
+Std across reps: 0.00%
+95% t-CI across reps: [51.61%, 51.61%]
+Pooled accuracy over 310 trials: 51.61%
+Wilson 95% CI (pooled): [46.06%, 57.12%]
+Per-item disagreement rate (instability): 0.00%
+Expected accuracy of ONE random sample: 51.61% (SE≈0.00%)
+Completion tokens — mean: 378.55, std: 123.40, min: 175, max: 766, total: 117350
+Accuracy: 0.5161290322580645
+Saved to decoded_text_to_prompt_flawedfictions_test_0.6temp_0.95topp_30topk_0.001minp_1.0reppen_1.0diralpha_10maxk_2048maxtok_0.01enths_256lenhs_Falsegumbel_Falsedirichlet_Truesoftthk_5nsmpl.pkl

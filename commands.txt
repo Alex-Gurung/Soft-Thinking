@@ -17,6 +17,6 @@ python custom_softthinking_better_eval.py \
   --start_idx 0 \
   --end_idx 100000 \
   --num_gpus 2 \
-  --num_samples 5 \
+  --num_samples 10 \
   --enable_soft_thinking
 

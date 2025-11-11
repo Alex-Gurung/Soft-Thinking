@@ -20,7 +20,7 @@ python custom_softthinking.py \
     --start_idx 0 \
     --end_idx 100000 \
     --num_gpus 2 \
-    --num_samples 5 \
+    --num_samples  \
     --enable_soft_thinking \
     --add_noise_gumbel_softmax \
     --gumbel_softmax_temperature 0.5 \
